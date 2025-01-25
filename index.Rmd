@@ -1,0 +1,14 @@
+---
+title: "UAS Visualisasi Data"
+author: "Nanda Zhafran Mahendra"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# Pendahuluan
+
+Tugas UAS ini bertujuan untuk mengukur kemampuan dalam membuat visualisasi data yang informatif menggunakan R Markdown. Dataset yang digunakan berasal dari file `Data.xlsx`.
+
+- **Nama**: Nanda ZHafran Mahendra
+- **NIM**:  A3202300035
+- **Tujuan Analisis**: Memberikan pemahaman visual dari data dengan berbagai jenis grafik.
