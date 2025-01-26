@@ -34,15 +34,22 @@ library(readxl)
 library(ggplot2)
 library(plotly)
 library(dplyr)
+library(tidyverse)
+library(gganimate)
+library(gapminder)
 
 # Membaca dataset
 setwd("C:/Users/ACER/OneDrive/Documents/UAZ DATAVIZ")
 data <- read_xlsx("data.xlsx")
 print(data)
 
+knitr::opts_chunk$set(echo = TRUE)
+
 # Periksa nama kolom untuk memastikan
 print(names(data))
 summary(data)
+print(names(data))
+
 ```
 ## Visualisasi Data
 
@@ -60,5 +67,19 @@ p1 <- ggplot(data, aes(x = `Angka_Harapan_Hidup`)) +  # Gunakan backticks jika a
 if (!dir.exists("figures")) dir.create("figures")
 ggsave("figures/scatterplot.png", p1)
 print(p1)
+```
+
+### 2. Grafik Bivariat: Scatter Plot
+
+```{r scatter}
+p2 <- ggplot(data, aes(x = Pendapatan_per_kapita, y = `Angka_Harapan_Hidup`)) +
+  geom_point(color = "darkred", alpha = 0.7) +
+  labs(title = "Hubungan antara Pendapatan per Kapita dan Angka Harapan Hidup",
+       x = "Pendapatan_per_Kapita",
+       y = "Angka_Harapan_Hidup") +
+  theme_minimal()
+
+ggsave("figures/scatterplot2.png", p2)
+print(p2)
 ```
 
