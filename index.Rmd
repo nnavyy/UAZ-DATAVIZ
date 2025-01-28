@@ -39,6 +39,9 @@ library(gganimate)
 library(gapminder)
 library(htmlwidgets)
 
+print(getwd())
+print(file.exists("styles.css"))
+
 # Membaca dataset
 setwd("C:/Users/ACER/OneDrive/Documents/UAZ DATAVIZ")
 data <- read_xlsx("data.xlsx")
@@ -113,7 +116,7 @@ Scatter plot berikut menunjukkan hubungan antara pendapatan per kapita dan angka
 
 ```{r scatter}
 p2 <- ggplot(data, aes(x = Pendapatan_per_kapita, y = `Angka_Harapan_Hidup`)) +
-  geom_point(color = "darkred", alpha = 0.7) +
+  geom_point(color = "darkred", alpha = 0.5) +
   labs(title = "Hubungan antara Pendapatan per Kapita dan Angka Harapan Hidup",
        x = "Pendapatan_per_Kapita",
        y = "Angka_Harapan_Hidup") +
@@ -127,11 +130,12 @@ print(p2)
 
 
 ### 3. Grafik Multivariat: Bubble Plot
+Populasi sebagai ukuran gelembung dan Benua sebagai kategori warna.
 ```{r bubbleplot}
 p3 <- ggplot(data, aes(x = Angka_Harapan_Hidup, 
                        y = `Pendapatan_per_kapita`, 
                        size = Populasi, color = Benua)) +
-  geom_point(alpha = 0.7) +
+  geom_point(alpha = 0.5) +
   scale_size(range = c(2, 12)) +
   labs(title = "Hubungan Multivariat Antar Variabel",
        x = "Angka Harapan Hidup",
@@ -147,23 +151,33 @@ print(p3)
 
 
 ### 4. Grafik Interaktif: Scatter Plot dengan Plotly
+A. pembaca dapat mengeksplorasi hubungan antar variabel secara langsung.
 ```{r plotly_scatter}
 p4 <- plot_ly(data, x = ~Angka_Harapan_Hidup, 
               y = ~`Pendapatan_per_kapita`, 
               type = 'scatter', 
               mode = 'markers', 
-              marker = list(size = 10, color = ~as.factor(Benua))) %>%
+              marker = list(size = 4, color = ~as.factor(Benua))) %>%
   layout(title = "Scatter Plot Interaktif",
          xaxis = list(title = "Angka Harapan Hidup"),
          yaxis = list(title = "Pendapatan per Kapita"))
 
 htmlwidgets::saveWidget(as_widget(p4), "figures/plotly_scatter.html")
+
 p4
 ```
 
+B. Grafik interaktif 3D
+```{r interactive, results='asis'}
+p4 <- plot_ly(data, x = ~`Pendapatan_per_kapita`, y = ~`Angka_Harapan_Hidup`, z = ~Populasi,
+              type = "scatter3d", mode = "markers",
+              marker = list(size = 5, color = ~Populasi, colorscale = "Viridis"))
 
+p4
+```
 
 ### 5. Grafik Dinamis: Gapminder Animation
+perubahan indikator sosial-ekonomi global dari waktu ke waktu.
 ```{r gganimate}
 p5 <- ggplot(gapminder, aes(x = gdpPercap, 
                             y = lifeExp, 
@@ -172,17 +186,58 @@ p5 <- ggplot(gapminder, aes(x = gdpPercap,
   geom_point(alpha = 0.7) +
   scale_x_log10() +
   labs(title = "Gapminder: Perubahan dari Tahun ke Tahun",
-       subtitle = 'Tahun: {closest_state}',
        x = "Pendapatan per Kapita (log scale)",
        y = "Angka Harapan Hidup",
        size = "Populasi",
        color = "Benua") +
   theme_minimal() +
-  transition_states(year, transition_length = 2, state_length = 1) +
-  ease_aes('linear')
+  gganimate::transition_states(year, transition_length = 2, state_length = 1) +
+  gganimate::enter_fade() +
+  gganimate::exit_fade() +
+  labs(subtitle = "Tahun: {closest_state}")
 
-anim <- gganimate::animate(p5, nframes = 100, renderer = gifski_renderer())
-gganimate::anim_save("figures/gapminder_animation.gif", animation = anim)
+anim <- gganimate::animate(p5, nframes = 100, renderer = gganimate::gifski_renderer())
+
+gganimate::anim_save("gapminder_animation.gif", animation = anim)
+
 knitr::include_graphics("gapminder_animation.gif")
+
+
+
 ```
+
+
+```{r gganimate2}
+required_columns <- c("Pendapatan_per_kapita", "Angka_Harapan_Hidup", "Populasi", "Benua", "Tahun")
+if (!all(required_columns %in% names(data))) {
+  stop("Beberapa kolom yang diperlukan tidak ditemukan di dataset.")
+}
+
+anim_plot <- ggplot(data, aes(x = Pendapatan_per_kapita, 
+                              y = Angka_Harapan_Hidup, 
+                              size = Populasi, 
+                              color = Benua)) +
+  geom_point(alpha = 0.6) +
+  scale_x_log10() + 
+  labs(title = "Perubahan Berdasarkan Tahun dan Benua",
+       subtitle = "Tahun: {closest_state}",
+       x = "Pendapatan per Kapita (log scale)",
+       y = "Angka Harapan Hidup",
+       size = "Populasi",
+       color = "Benua") +
+  theme_minimal() +
+  theme(legend.position = "bottom") +
+  gganimate::transition_states(Tahun, transition_length = 2, state_length = 1) +
+  gganimate::enter_fade() +
+  gganimate::exit_fade() +
+  facet_wrap(~ Benua)
+anim <- animate(anim_plot, nframes = 100, fps = 12, width = 1200, height = 1000,
+renderer = gifski_renderer())
+
+anim_save("figures/animasi_benua.gif", animation = anim)
+
+knitr::include_graphics("figures/animasi_benua.gif")
+
+```
+
 
