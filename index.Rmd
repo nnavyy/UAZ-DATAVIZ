@@ -4,7 +4,6 @@ author: "Nanda Zhafran Mahendra"
 date: "`r Sys.Date()`"
 output: html_document
 css: styles.css
-
 ---
 # Pendahuluan
 
@@ -246,43 +245,7 @@ animate(p6, renderer = gifski_renderer())
 ```
 
 #### D. Animasi Setiap Benua
-```{r gganimate2}
-required_columns <- c("Pendapatan_per_kapita", "Angka_Harapan_Hidup", "Populasi", "Benua", "Tahun")
-if (!all(required_columns %in% names(data))) {
-  stop("Beberapa kolom yang diperlukan tidak ditemukan di dataset.")
-}
 
-anim_plot <- ggplot(data, aes(x = Pendapatan_per_kapita, 
-                              y = Angka_Harapan_Hidup, 
-                              size = Populasi, 
-                              color = Benua)) +
-  geom_point(alpha = 0.6) +
-  scale_x_log10() + 
-  labs(title = "Perubahan Berdasarkan Tahun dan Benua",
-       subtitle = "Tahun: {closest_state}",
-       x = "Pendapatan per Kapita (log scale)",
-       y = "Angka Harapan Hidup",
-       size = "Populasi",
-       color = "Benua") +
-theme_minimal() +
-  theme(legend.position = "bottom",
-        strip.text = element_text(size = 16),
-        strip.background = element_rect(fill = "lightblue", color = "black", size = 1),
-        panel.spacing = unit(2, "lines"),
-        axis.text = element_text(size = 14),
-        axis.title = element_text(size = 14)) +
-  gganimate::transition_states(Tahun, transition_length = 2, state_length = 1) +
-  gganimate::enter_fade() +
-  gganimate::exit_fade() +
-  facet_wrap(~ Benua, scales = "free", ncol = 2)
-
-anim <- animate(anim_plot, nframes = 100, fps = 12, width = 1200, height = 1000,
-                renderer = gifski_renderer())
-
-anim_save("figures/animasi_benua.gif", animation = anim)
-
-knitr::include_graphics("figures/animasi_benua.gif")
-```
 
 
 ## Kesimpulan
