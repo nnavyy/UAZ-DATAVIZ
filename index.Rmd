@@ -129,7 +129,7 @@ print(p2)
 
 
 
-### 3. Grafik Multivariat: Bubble Plot
+### 3.A Grafik Multivariat: Bubble Plot
 Populasi sebagai ukuran gelembung dan Benua sebagai kategori warna.
 ```{r bubbleplot}
 p3 <- ggplot(data, aes(x = Angka_Harapan_Hidup, 
@@ -148,6 +148,23 @@ ggsave("figures/bubbleplot.png", p3)
 print(p3)
 ```
 
+### 3.B Gravik Multifariat: Bubble Plot
+```{r heatmap}
+heatmap_data <- data %>%
+  group_by(Benua, Tahun) %>%
+  summarize(MeanLifeExpectancy = mean(`Angka_Harapan_Hidup`, na.rm = TRUE), .groups = 'drop')
+
+p3 <- ggplot(heatmap_data, aes(x = Tahun, y = Benua, fill = MeanLifeExpectancy)) +
+  geom_tile() +
+  labs(title = "Heatmap Angka Harapan Hidup Rata-rata",
+       x = "Tahun",
+       y = "Benua",
+       fill = "Rata-rata Harapan Hidup") +
+  theme_minimal()
+
+ggsave("figures/heatmap.png", p3)
+print(p3)
+```
 
 
 ### 4. Grafik Interaktif: Scatter Plot dengan Plotly
@@ -206,7 +223,29 @@ knitr::include_graphics("gapminder_animation.gif")
 
 ```
 
+#### b. Scatter Plot Dasar
+```{r gapminder_plot}
+p5 <- ggplot(gapminder, aes(x = gdpPercap, y = lifeExp, size = pop, color = continent)) +
+  geom_point(alpha = 0.7) +
+  scale_x_log10() +
+  labs(title = "Hubungan GDP per Capita dan Life Expectancy",
+       x = "GDP per Capita",
+       y = "Life Expectancy") +
+  theme_minimal()
+print(p5)
+```
 
+#### c. Animasi Transisi Waktu
+```{r gapminder_animate}
+p6 <- p5 +
+  transition_time(year) +
+  labs(title = "Year: {frame_time}") +
+  shadow_mark(alpha = 0.3, size = 0.5)
+
+animate(p6, renderer = gifski_renderer())
+```
+
+#### D. Animasi Setiap Benua
 ```{r gganimate2}
 required_columns <- c("Pendapatan_per_kapita", "Angka_Harapan_Hidup", "Populasi", "Benua", "Tahun")
 if (!all(required_columns %in% names(data))) {
@@ -225,19 +264,35 @@ anim_plot <- ggplot(data, aes(x = Pendapatan_per_kapita,
        y = "Angka Harapan Hidup",
        size = "Populasi",
        color = "Benua") +
-  theme_minimal() +
-  theme(legend.position = "bottom") +
+theme_minimal() +
+  theme(legend.position = "bottom",
+        strip.text = element_text(size = 16),
+        strip.background = element_rect(fill = "lightblue", color = "black", size = 1),
+        panel.spacing = unit(2, "lines"),
+        axis.text = element_text(size = 14),
+        axis.title = element_text(size = 14)) +
   gganimate::transition_states(Tahun, transition_length = 2, state_length = 1) +
   gganimate::enter_fade() +
   gganimate::exit_fade() +
-  facet_wrap(~ Benua)
+  facet_wrap(~ Benua, scales = "free", ncol = 2)
+
 anim <- animate(anim_plot, nframes = 100, fps = 12, width = 1200, height = 1000,
-renderer = gifski_renderer())
+                renderer = gifski_renderer())
 
 anim_save("figures/animasi_benua.gif", animation = anim)
 
 knitr::include_graphics("figures/animasi_benua.gif")
-
 ```
+
+
+## Kesimpulan
+
+Berdasarkan analisis visual:
+
+1. Angka harapan hidup menunjukkan distribusi yang beragam di berbagai negara.
+2. Ada korelasi tertentu antara pendapatan per kapita dan angka harapan hidup.
+3. Rata-rata angka harapan hidup berbeda berdasarkan benua dan tahun.
+4. Visualisasi interaktif memberikan gambaran hubungan tiga variabel yang lebih mendalam.
+5. Animasi membantu memahami perubahan pola data seiring waktu.
 
 
