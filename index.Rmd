@@ -37,6 +37,7 @@ library(dplyr)
 library(tidyverse)
 library(gganimate)
 library(gapminder)
+library(htmlwidgets)
 
 # Membaca dataset
 setwd("C:/Users/ACER/OneDrive/Documents/UAZ DATAVIZ")
@@ -161,6 +162,7 @@ p4
 ```
 
 
+
 ### 5. Grafik Dinamis: Gapminder Animation
 ```{r gganimate}
 p5 <- ggplot(gapminder, aes(x = gdpPercap, 
@@ -181,5 +183,6 @@ p5 <- ggplot(gapminder, aes(x = gdpPercap,
 
 anim <- gganimate::animate(p5, nframes = 100, renderer = gifski_renderer())
 gganimate::anim_save("figures/gapminder_animation.gif", animation = anim)
+knitr::include_graphics("gapminder_animation.gif")
 ```
 
