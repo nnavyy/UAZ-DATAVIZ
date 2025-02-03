@@ -114,11 +114,11 @@ Scatter plot berikut menunjukkan hubungan antara pendapatan per kapita dan angka
 
 
 ```{r scatter}
-p2 <- ggplot(data, aes(x = Pendapatan_per_kapita, y = `Angka_Harapan_Hidup`)) +
+p2 <- ggplot(data, aes(x = Angka_Harapan_Hidup, y = `Pendapatan_per_kapita`)) +
   geom_point(color = "darkred", alpha = 0.5) +
   labs(title = "Hubungan antara Pendapatan per Kapita dan Angka Harapan Hidup",
-       x = "Pendapatan_per_Kapita",
-       y = "Angka_Harapan_Hidup") +
+       x = "Angka_Harapan_Hidup",
+       y = "Pendapatan_per_Kapita") +
   theme_minimal()
 
 ggsave("figures/scatterplot2.png", p2)
@@ -167,23 +167,7 @@ print(p3)
 
 
 ### 4. Grafik Interaktif: Scatter Plot dengan Plotly
-A. pembaca dapat mengeksplorasi hubungan antar variabel secara langsung.
-```{r plotly_scatter}
-p4 <- plot_ly(data, x = ~Angka_Harapan_Hidup, 
-              y = ~`Pendapatan_per_kapita`, 
-              type = 'scatter', 
-              mode = 'markers', 
-              marker = list(size = 4, color = ~as.factor(Benua))) %>%
-  layout(title = "Scatter Plot Interaktif",
-         xaxis = list(title = "Angka Harapan Hidup"),
-         yaxis = list(title = "Pendapatan per Kapita"))
-
-htmlwidgets::saveWidget(as_widget(p4), "figures/plotly_scatter.html")
-
-p4
-```
-
-B. Grafik interaktif 3D
+A. pembaca dapat mengeksplorasi hubungan antar variabel secara langsung dengan Grafik interaktif 3D
 ```{r interactive, results='asis'}
 p4 <- plot_ly(data, x = ~`Pendapatan_per_kapita`, y = ~`Angka_Harapan_Hidup`, z = ~Populasi,
               type = "scatter3d", mode = "markers",
@@ -243,10 +227,6 @@ p6 <- p5 +
 
 animate(p6, renderer = gifski_renderer())
 ```
-
-#### D. Animasi Setiap Benua
-
-
 
 ## Kesimpulan
 
